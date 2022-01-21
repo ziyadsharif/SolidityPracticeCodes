@@ -3,7 +3,6 @@ pragma solidity >=0.4.22 <0.6.0;
 contract Bidding {
     address payable public payee;
     uint public biddingEndTime;
-
     address public highestBidder;
     uint public highestBid;
 

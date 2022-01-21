@@ -19,26 +19,17 @@ contract Buy {
     }
 
     modifier onlyPurchaser() {
-        require(
-            msg.sender == purchaser,
-            "Only purchaser can call this."
-        );
+        require(msg.sender == purchaser,"Only purchaser can call this.");
         _;
     }
 
     modifier onlySeller() {
-        require(
-            msg.sender == seller,
-            "Only seller can call this."
-        );
+        require(msg.sender == seller,"Only seller can call this.");
         _;
     }
 
     modifier inState(State _state) {
-        require(
-            state == _state,
-            "Invalid state."
-        );
+        require(state == _state,"Invalid state.");
         _;
     }
 
@@ -46,32 +37,19 @@ contract Buy {
     event BuyConfirmed();
     event ItemCollected();
 
-    function abort()
-        public
-        onlySeller
-        inState(State.Created)
-    {
+    function abort() public onlySeller inState(State.Created){
         emit Aborted();
         state = State.Inactive;
         seller.transfer(address(this).balance);
     }
 
-    function confirmBuy()
-        public
-        inState(State.Created)
-        condition(msg.value == (2 * value))
-        payable
-    {
+    function confirmBuy() public inState(State.Created) condition(msg.value == (2 * value)) payable {
         emit BuyConfirmed();
         purchaser = msg.sender;
         state = State.Locked;
     }
 
-    function confirmCollected()
-        public
-        onlyPurchaser
-        inState(State.Locked)
-    {
+    function confirmCollected() public onlyPurchaser inState(State.Locked) {
         emit ItemCollected();
         state = State.Inactive;
         purchaser.transfer(value);

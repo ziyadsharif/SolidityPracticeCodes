@@ -1,22 +1,21 @@
 pragma solidity >=0.4.22 <0.6.0;
 
 contract Election {
+    
     struct VotingCenter {
         bytes32 name;   
         uint voteCount; 
     }
     
-    // Struct for Each Voter
     struct Voter {
         uint weight; 
         bool voted;  
         address delegate;
         uint vote;   
     }
+    
     address public presidingOfficer;
-
     mapping(address => Voter) public voters;
-
     VotingCenter[] public VotingCenters;
 
     constructor(bytes32[] memory VotingCenterNames) public {
@@ -32,14 +31,8 @@ contract Election {
     }
 
     function assignVotingRight(address voter) public {
-        require(
-            msg.sender == presidingOfficer,
-            "You are not a Presiding Officer so you cannot give rights to vote."
-        );
-        require(
-            !voters[voter].voted,
-            "User already voted"
-        );
+        require(msg.sender == presidingOfficer,"You are not a Presiding Officer so you cannot give rights to vote.");
+        require( !voters[voter].voted, "User already voted");
         require(voters[voter].weight == 0);
         voters[voter].weight = 1;
     }
@@ -47,7 +40,6 @@ contract Election {
     function delegate(address to) public {
         Voter storage sender = voters[msg.sender];
         require(!sender.voted, "vote already casted");
-
         require(to != msg.sender, "You cannot assign yourself");
 
         while (voters[to].delegate != address(0)) {
@@ -58,6 +50,7 @@ contract Election {
         sender.voted = true;
         sender.delegate = to;
         Voter storage delegate_ = voters[to];
+        
         if (delegate_.voted) {
             VotingCenters[delegate_.vote].voteCount += sender.weight;
         } else {
@@ -77,9 +70,7 @@ contract Election {
         VotingCenters[VotingCenter].voteCount += sender.weight;
     }
 
-    function maxCountVotingCenter() public view
-            returns (uint maxCountVotingCenter_)
-    {
+    function maxCountVotingCenter() public view returns (uint maxCountVotingCenter_) {
         uint winningVoteCount = 0;
         for (uint p = 0; p < VotingCenters.length; p++) {
             if (VotingCenters[p].voteCount > winningVoteCount) {
@@ -89,9 +80,7 @@ contract Election {
         }
     }
 
-    function electedWinnerName() public view
-            returns (bytes32 electedWinnerName_)
-    {
+    function electedWinnerName() public view returns (bytes32 electedWinnerName_) {
         electedWinnerName_ = VotingCenters[maxCountVotingCenter()].name;
     }
 }

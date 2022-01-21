@@ -45,7 +45,6 @@ contract DealFlowContract {
    
     function joinAsClient() public payable returns(string memory){
         executionDate[msg.sender] = now;
-       // clients.push(client_account(orderCounter++, msg.sender, address(msg.sender).balance));
         return "";
     }
     
@@ -57,7 +56,7 @@ contract DealFlowContract {
         msg.sender.transfer(amount * 1 ether);
     }
     
-    function sendOrder() public payable onlyManager{
+    function sendOrder() public payable onlyManager {
         for(uint i=0;i<clients.length;i++){
             address initialAddress = clients[i].client_address;
             uint lastexecutionDate = executionDate[initialAddress];
